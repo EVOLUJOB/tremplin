@@ -80,6 +80,8 @@
   .content{display:flex;flex-direction:column;gap:20px;min-width:0}
   .stats-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:-6px}
   .stats-head .lab{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--slateL);font-weight:700}
+  .reset-link{font-size:12px;font-weight:600;color:var(--slateL);background:none;border:none;cursor:pointer;text-decoration:underline}
+  .reset-link:hover{color:var(--inkSoft)}
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
   .stat{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .stat .v{font-family:'Bricolage Grotesque';font-weight:800;font-size:30px;line-height:1}
@@ -191,12 +193,15 @@
   </aside>
 
   <section class="content">
-    <div class="stats-head"><span class="lab">Cette session</span></div>
+    <div class="stats-head">
+      <span class="lab">Suivi de l'usage · gardé sur cet ordinateur</span>
+      <button class="reset-link" id="resetStats">Réinitialiser</button>
+    </div>
     <div class="stats">
-      <div class="stat"><div class="bar" style="background:var(--ink)"></div><div class="v tnum" id="sPrep">–</div><div class="l">Offres repérées</div></div>
-      <div class="stat"><div class="bar" style="background:var(--emerald)"></div><div class="v tnum" id="sEnv" style="color:var(--emerald)">0</div><div class="l">Candidatures envoyées</div></div>
-      <div class="stat"><div class="bar" style="background:var(--slateL)"></div><div class="v tnum" id="sRep">0</div><div class="l">Réponses</div></div>
-      <div class="stat"><div class="bar" style="background:var(--amber)"></div><div class="v tnum" id="sEnt" style="color:var(--amber)">0</div><div class="l">Entretiens</div></div>
+      <div class="stat"><div class="bar" style="background:var(--ink)"></div><div class="v tnum" id="sPrep">–</div><div class="l">Offres repérées (recherche en cours)</div></div>
+      <div class="stat"><div class="bar" style="background:var(--emerald)"></div><div class="v tnum" id="sEnv" style="color:var(--emerald)">0</div><div class="l">Candidatures — cette session</div></div>
+      <div class="stat"><div class="bar" style="background:var(--ink)"></div><div class="v tnum" id="sTotal">0</div><div class="l">Candidatures — total</div></div>
+      <div class="stat"><div class="bar" style="background:var(--amber)"></div><div class="v tnum" id="sWeek" style="color:var(--amber)">0</div><div class="l">Candidatures — 7 derniers jours</div></div>
     </div>
     <div class="banner" id="banner">Chargement des offres…</div>
     <div class="offers" id="offers"></div>
@@ -217,6 +222,13 @@ let profils=[], active=null, currentData=null;
 const sentGlobal = new Set();
 const edited = {};
 let cvData = null;
+
+// Suivi cumulé, mémorisé dans le navigateur de ce poste (gratuit, local)
+const LS_KEY='tremplin_history_v1';
+let history=[]; try{ history=JSON.parse(localStorage.getItem(LS_KEY))||[]; }catch(e){ history=[]; }
+function saveHistory(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(history.slice(-3000))); }catch(e){} }
+function weekCount(){ const t=Date.now()-7*86400000; return history.filter(x=>x>t).length; }
+function refreshKpi(){ const a=$('#sTotal'), b=$('#sWeek'); if(a) a.textContent=history.length; if(b) b.textContent=weekCount(); }
 
 const SKILLS=["Word","Excel","PowerPoint","Outlook","SAP","Sage","Cegid","EBP","accueil",
   "standard téléphonique","gestion d'agenda","agenda","planning","facturation","devis",
@@ -335,6 +347,41 @@ async function fetchOffres(){
   render();
 }
 
+function offerDays(ago){
+  if(!ago) return 45;
+  if(/aujourd/i.test(ago)) return 0;
+  const m=String(ago).match(/(\d+)/); return m?parseInt(m[1],10):45;
+}
+// Score d'affinité multi-critères (0..99)
+function scoreOffer(o, profil){
+  const text=((o.title||'')+' '+(o.description||'')).toLowerCase();
+  const title=(o.title||'').toLowerCase();
+  const kw=((profil&&profil.motsCles)||'').toLowerCase().split(/\s+/).filter(w=>w.length>2);
+
+  // 1) compétences du CV (si dispo) sinon mots-clés du métier
+  let skillScore;
+  if(cvData && cvData.skills && cvData.skills.length){
+    const hits=cvData.skills.filter(s=>text.includes(String(s).toLowerCase())).length;
+    skillScore=Math.min(1, hits/Math.max(3, cvData.skills.length));
+  } else {
+    const hits=kw.filter(w=>text.includes(w)).length;
+    skillScore=kw.length?hits/kw.length:0.5;
+  }
+  // 2) présence dans le titre (signal fort)
+  const th=kw.filter(w=>title.includes(w)).length;
+  const titleScore=kw.length?th/kw.length:0.5;
+  // 3) proximité géographique (même département)
+  const geoScore=(cvData && cvData.dept && String(o.city||'').includes(cvData.dept))?1:0.85;
+  // 4) fraîcheur (récent = mieux)
+  const freshScore=Math.max(0, 1 - offerDays(o.ago)/60);
+  // 5) type de contrat
+  const c=String(o.contract||'');
+  const contractScore=/CDI/i.test(c)?1:(/CDD|int[eé]rim|temporaire/i.test(c)?0.75:0.65);
+
+  const total = 0.50*skillScore + 0.20*titleScore + 0.12*freshScore + 0.10*geoScore + 0.08*contractScore;
+  return Math.max(40, Math.min(99, Math.round(42 + total*57)));
+}
+
 function render(){
   const data=currentData; if(!data) return;
   if(data.error){
@@ -347,6 +394,7 @@ function render(){
   $('#modeText').textContent = real?'Données réelles':'Aperçu démo';
   $('#sPrep').textContent = data.count;
   $('#sEnv').textContent = sentGlobal.size;
+  refreshKpi();
 
   const wrap=$('#offers'); wrap.innerHTML='';
   if(!data.offres || data.count===0){
@@ -354,9 +402,11 @@ function render(){
     wrap.innerHTML='<div class="empty">Aucune offre pour l\'instant. Changez le métier ou le département à gauche.</div>';
     return;
   }
-  $('#banner').innerHTML='<b>'+data.count+' offres administratives</b> repérées'+(cvData?' — candidatures personnalisées avec le CV':'')+'. Il ne reste qu\'à relire et valider.';
+  $('#banner').innerHTML='<b>'+data.count+' offres</b> repérées'+(cvData?' — score et candidatures personnalisés avec le CV':' — <i>déposez un CV pour un score personnalisé</i>')+'. Il ne reste qu\'à relire et valider.';
 
-  data.offres.forEach(o=>{
+  const profil = profils.find(p=>p.id===active) || {};
+  const list = data.offres.map(o=>({ ...o, match: scoreOffer(o, profil) })).sort((a,b)=>b.match-a.match);
+  list.forEach(o=>{
     const sent = sentGlobal.has(o.id);
     const col = matchColor(o.match);
     const el=document.createElement('div');
@@ -411,6 +461,7 @@ function doApply(o, message){
   } else {
     toast('Copiez la lettre, puis postulez sur l\'offre');
   }
+  if(!sentGlobal.has(o.id)){ history.push(Date.now()); saveHistory(); }
   sentGlobal.add(o.id);
   render();
 }
@@ -459,6 +510,9 @@ $('#cvInput').addEventListener('change', (e)=>{ const f=e.target.files[0]; if(f)
 $('#cvOpen').addEventListener('click', ()=>{ if(cvData) window.open(cvData.fileUrl,'_blank'); });
 $('#cvRemove').addEventListener('click', ()=>{ if(cvData&&cvData.fileUrl){try{URL.revokeObjectURL(cvData.fileUrl);}catch(e){}} cvData=null; $('#cvInput').value=''; renderCvCard(); fetchOffres(); });
 
+$('#resetStats').addEventListener('click', ()=>{ if(confirm('Remettre à zéro le suivi de cet ordinateur ?')){ history=[]; saveHistory(); sentGlobal.clear(); render(); refreshKpi(); toast('Suivi réinitialisé'); } });
+
+refreshKpi();
 init();
 </script>
 </body>
