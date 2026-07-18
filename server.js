@@ -16,7 +16,7 @@ const MOCK_MODE = process.env.MOCK_MODE==="1" || !process.env.FT_CLIENT_ID;
 app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/profils",(_q,res)=>{
-  res.json(Object.entries(PROFILS).map(([id,p])=>({id,label:p.label})));
+  res.json(Object.entries(PROFILS).map(([id,p])=>({id,label:p.label,motsCles:p.motsCles})));
 });
 
 app.get("/api/offres", async (req,res)=>{
@@ -24,26 +24,27 @@ app.get("/api/offres", async (req,res)=>{
   if(!profil) return res.status(400).json({error:"Profil inconnu"});
   const params={ motsCles:profil.motsCles, dept:req.query.departement||"" };
   try{
-    let raw=[]; const usedSources=[];
+    let raw=[]; let statuses=[];
     if(MOCK_MODE){
-      raw=MOCK; usedSources.push("Démo");
+      raw=MOCK; statuses=["Démo : "+MOCK.length+" offres"];
     } else {
       const tasks=[
-        { name:"France Travail", fn:()=>searchFranceTravail(params) },
-        { name:"Adzuna",         fn:()=>searchAdzuna(params) },
-        { name:"Jooble",         fn:()=>searchJooble(params) },
+        { name:"France Travail", enabled:!!process.env.FT_CLIENT_ID, fn:()=>searchFranceTravail(params) },
+        { name:"Adzuna",         enabled:!!(process.env.ADZUNA_APP_ID&&process.env.ADZUNA_APP_KEY), fn:()=>searchAdzuna(params) },
+        { name:"Jooble",         enabled:!!process.env.JOOBLE_KEY, fn:()=>searchJooble(params) },
       ];
-      const settled=await Promise.all(tasks.map(async t=>{
-        try{ const r=await t.fn(); if(r&&r.length) usedSources.push(t.name+" ("+r.length+")"); return r||[]; }
-        catch(e){ console.error(t.name+" KO :", e.message); return []; }
+      const results=await Promise.all(tasks.map(async t=>{
+        if(!t.enabled) return { name:t.name, offers:[], status:"clé absente" };
+        try{ const r=await t.fn(); return { name:t.name, offers:r||[], status:((r&&r.length)||0)+" offres" }; }
+        catch(e){ console.error(t.name+" KO :", e.message); return { name:t.name, offers:[], status:"erreur — "+String(e.message).slice(0,90) }; }
       }));
-      raw=[].concat(...settled);
+      statuses=results.map(r=>r.name+" : "+r.status);
+      raw=[].concat(...results.map(r=>r.offers));
     }
-    // déduplication (garde la 1re occurrence : ordre France Travail, Adzuna, Jooble)
     const seen=new Set();
     raw=raw.filter(o=>{ const k=dedupKey(o); if(!k||seen.has(k)) return false; seen.add(k); return true; });
     const offres=raw.map(o=>enrich(o,profil)).sort((a,b)=>b.match-a.match).slice(0,60);
-    res.json({ mode:MOCK_MODE?"demo":"reel", sources:usedSources, count:offres.length, offres });
+    res.json({ mode:MOCK_MODE?"demo":"reel", sources:statuses, count:offres.length, offres });
   }catch(e){
     res.status(502).json({error:e.message});
   }
