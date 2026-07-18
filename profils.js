@@ -1,16 +1,18 @@
 // Profils candidats types (métiers administratifs).
-// motsCles  : envoyés à l'API France Travail (recherche large et robuste)
-// codeROME  : optionnel, pour affiner en production. À CONFIRMER via l'endpoint
-//             référentiel de l'API (/referentiel/metiers) — ne pas se fier
-//             aveuglément aux codes ci-dessous, ils servent d'amorce.
-// atouts    : points forts réutilisés dans la candidature préparée
-// pitch     : phrase d'accroche insérée dans le message au recruteur
+// motsCles : envoyés à l'API France Travail. IMPORTANT : chaque mot RESTREINT
+//            la recherche (comportement cumulatif), donc on reste sur 1-2 mots
+//            qui définissent le métier, pour maximiser le volume d'offres.
+// codeROME : laissé vide volontairement — le combiner aux mots-clés filtrait
+//            deux fois et faisait chuter les résultats. On s'appuie sur les
+//            mots-clés + le score d'affinité pour la pertinence.
+// atouts   : points forts réutilisés dans la candidature préparée
+// pitch    : phrase d'accroche insérée dans le message au recruteur
 
 const PROFILS = {
   direction: {
     label: "Assistanat de direction / RH",
-    motsCles: "assistant direction ressources humaines",
-    codeROME: "M1604", // Assistanat de direction (à confirmer)
+    motsCles: "assistant direction",
+    codeROME: "",
     atouts: [
       "Gestion d'agendas, d'instances et de déplacements",
       "Préparation de dossiers et de comptes rendus",
@@ -21,8 +23,8 @@ const PROFILS = {
   },
   juridique: {
     label: "Assistanat juridique",
-    motsCles: "assistant juridique secrétaire juridique",
-    codeROME: "", // s'appuyer sur les mots-clés
+    motsCles: "assistant juridique",
+    codeROME: "",
     atouts: [
       "Gestion des dossiers et actes courants",
       "Rédaction, relecture et mise en forme juridique",
@@ -33,8 +35,8 @@ const PROFILS = {
   },
   adv: {
     label: "Assistanat ADV / commercial",
-    motsCles: "assistant administration des ventes commercial ADV",
-    codeROME: "D1401", // Assistanat commercial (à confirmer)
+    motsCles: "assistant commercial",
+    codeROME: "",
     atouts: [
       "Traitement des commandes de A à Z",
       "Interface clients, devis et relances",
@@ -45,8 +47,8 @@ const PROFILS = {
   },
   medical: {
     label: "Secrétariat médical",
-    motsCles: "secrétaire médicale médico-administratif",
-    codeROME: "M1609", // Secrétariat et assistanat médical (à confirmer)
+    motsCles: "secrétaire médicale",
+    codeROME: "",
     atouts: [
       "Accueil patients et prise de rendez-vous",
       "Gestion du dossier médical et télétransmission",
