@@ -5,212 +5,320 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tremplin — vos candidatures, prêtes à partir</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --ink:#17233B; --inkSoft:#2A3A5C; --paper:#EBEDF0; --surface:#fff;
-    --emerald:#12805C; --emeraldSoft:#E6F2EC; --amber:#C98A2B; --amberSoft:#F7EEDD;
-    --slate:#5B6472; --hair:#E1E4E8;
+    --ink:#16233C; --inkSoft:#2C3E60; --paper:#EEF1F5; --surface:#fff;
+    --emerald:#12805C; --emeraldD:#0E6A4C; --emeraldSoft:#E7F3EE;
+    --amber:#C6851F; --amberSoft:#F8EFDC;
+    --shadow:0 1px 2px rgba(16,35,60,.04), 0 6px 24px rgba(16,35,60,.06);
+    --shadowH:0 2px 6px rgba(16,35,60,.06), 0 14px 40px rgba(16,35,60,.10);
+    --radius:14px;
   }
-  *{box-sizing:border-box;margin:0;-webkit-font-smoothing:antialiased}
-  body{background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.45}
-  .wrap{max-width:920px;margin:0 auto;padding:24px 16px}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  html,body{height:100%}
+  body{background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5;font-size:15px}
   .tnum{font-variant-numeric:tabular-nums}
-  h1,h2,h3,.display{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
-  /* header */
-  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-  .brand{display:flex;align-items:center;gap:10px}
-  .logo{background:var(--ink);border-radius:9px;width:36px;height:36px;display:grid;place-items:center;color:#fff;font-weight:800}
-  .brand .name{font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;line-height:1}
-  .brand .sub{font-size:12px;color:var(--slate)}
-  .pill{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
-  /* profils */
-  .profils{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px}
-  .profil{flex:0 0 auto;min-width:190px;text-align:left;background:var(--surface);border:1px solid var(--hair);
-          border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}
-  .profil .pn{font-weight:600;font-size:14px}
-  .profil .pr{font-size:12px;color:var(--slate)}
-  .profil.on{background:var(--ink);border-color:var(--ink)}
-  .profil.on .pn{color:#fff} .profil.on .pr{color:#C6CEDC}
-  /* pipeline */
-  .lab{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);font-weight:600;margin-bottom:8px}
-  .stats{display:flex;gap:8px}
-  .stat{flex:1;background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:12px}
-  .stat .v{font-family:'Bricolage Grotesque';font-weight:800;font-size:24px}
-  .stat .l{font-size:12px;color:var(--slate);margin-top:2px}
-  /* bandeau */
-  .banner{display:flex;align-items:center;gap:8px;background:var(--emeraldSoft);color:var(--emerald);
-          border-radius:10px;padding:9px 12px;font-size:14px;margin:16px 0}
-  /* offres */
-  .offre{background:var(--surface);border:1px solid var(--hair);border-radius:12px;display:flex;overflow:hidden;margin-bottom:12px}
-  .tab{width:6px;flex:0 0 6px}
-  .body{flex:1;padding:16px}
-  .orow{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-  .otitle{font-family:'Bricolage Grotesque';font-weight:700;font-size:16px}
-  .badge{font-size:12px;color:var(--slate);background:var(--paper);border-radius:999px;padding:2px 8px;margin-left:8px}
-  .meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--slate);font-size:13.5px;margin-top:6px}
-  .match{font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;text-align:right}
-  .matchl{font-size:10px;text-transform:uppercase;color:var(--slate);text-align:right}
-  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-  button{font-family:Inter;font-size:14px;font-weight:600;border:none;border-radius:9px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
-  .send{background:var(--emerald);color:#fff}
-  .ghost{background:var(--surface);border:1px solid var(--hair);color:var(--inkSoft);font-weight:500}
-  .sent{background:var(--emeraldSoft);color:var(--emerald)}
-  .prep{border-top:1px solid var(--hair);margin-top:14px;padding-top:14px;display:none}
-  .prep.show{display:block}
-  .preplab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:6px}
-  .atout{font-size:14px;color:var(--inkSoft);display:flex;gap:8px;margin-bottom:4px}
-  .msg{white-space:pre-wrap;background:var(--paper);border-radius:9px;padding:12px;font-size:14px;color:var(--inkSoft);margin-top:4px}
-  .deptrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-  .deptrow label{font-size:13px;font-weight:600;color:var(--inkSoft)}
-  .deptrow input{font-family:Inter;font-size:14px;padding:8px 10px;width:120px;border:1px solid var(--hair);border-radius:9px;background:var(--surface);color:var(--ink)}
-  .deptrow input:focus{outline:none;border-color:var(--ink)}
-  .depthint{font-size:12px;color:var(--slate)}
-  .foot{text-align:center;color:var(--slate);font-size:12px;margin-top:22px}
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;
-         padding:10px 16px;border-radius:11px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.18);display:none}
-  @media (max-width:560px){ .stats{flex-wrap:wrap} .stat{min-width:calc(50% - 4px)} }
+  h1,h2,h3,.display{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-weight:800}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  a{color:inherit}
+
+  /* ---------- Top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);
+          border-bottom:1px solid var(--hair)}
+  .topbar-in{max-width:1440px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--ink),#24406e);
+        display:grid;place-items:center;color:#fff;font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;box-shadow:var(--shadow)}
+  .brand .name{font-family:'Bricolage Grotesque';font-weight:800;font-size:21px;line-height:1.05}
+  .brand .sub{font-size:12.5px;color:var(--slate)}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px}
+  .badge.real{background:var(--emeraldSoft);color:var(--emeraldD)}
+  .badge.demo{background:var(--amberSoft);color:var(--amber)}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 0 3px rgba(18,128,92,.15)}
+
+  /* ---------- Layout ---------- */
+  .layout{max-width:1440px;margin:0 auto;padding:28px;display:grid;grid-template-columns:330px 1fr;gap:24px;align-items:start}
+  .sidebar{position:sticky;top:92px;display:flex;flex-direction:column;gap:18px}
+  .card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card-pad{padding:20px}
+  .card-title{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--slateL);font-weight:700;margin-bottom:14px}
+
+  /* profile list */
+  .plist{display:flex;flex-direction:column;gap:8px}
+  .pitem{display:flex;flex-direction:column;gap:2px;text-align:left;padding:12px 14px;border-radius:11px;border:1px solid var(--hair);
+         background:var(--surface);transition:all .15s}
+  .pitem:hover{border-color:#cfd6df;background:#FAFBFC}
+  .pitem .pn{font-weight:700;font-size:14.5px}
+  .pitem .pr{font-size:12.5px;color:var(--slate)}
+  .pitem.on{background:var(--ink);border-color:var(--ink);box-shadow:var(--shadow)}
+  .pitem.on .pn{color:#fff}
+  .pitem.on .pr{color:#AEBBD0}
+
+  /* filter */
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--inkSoft);margin-bottom:7px}
+  .field input{width:100%;font-family:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--hair);border-radius:11px;
+               background:#FAFBFC;color:var(--ink);transition:.15s}
+  .field input:focus{outline:none;border-color:var(--ink);background:#fff;box-shadow:0 0 0 3px rgba(22,35,60,.08)}
+  .field .hint{font-size:12px;color:var(--slateL);margin-top:8px;line-height:1.45}
+
+  .help p{font-size:13px;color:var(--slate);line-height:1.55}
+  .help .lead{color:var(--ink);font-weight:600;margin-bottom:6px}
+
+  /* ---------- Content ---------- */
+  .content{display:flex;flex-direction:column;gap:20px;min-width:0}
+  .stats-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:-6px}
+  .stats-head .lab{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--slateL);font-weight:700}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .stat{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .stat .v{font-family:'Bricolage Grotesque';font-weight:800;font-size:30px;line-height:1}
+  .stat .l{font-size:12.5px;color:var(--slate);margin-top:6px}
+  .stat .bar{position:absolute;left:0;top:0;height:3px;width:100%}
+
+  .banner{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--hair);border-left:4px solid var(--emerald);
+          border-radius:12px;padding:14px 18px;font-size:14.5px;color:var(--inkSoft);box-shadow:var(--shadow)}
+  .banner b{color:var(--ink)}
+  .banner.err{border-left-color:#C0392B;color:#8a3227}
+
+  .offers{display:flex;flex-direction:column;gap:14px}
+  .offer{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);
+         display:flex;overflow:hidden;transition:box-shadow .18s, transform .18s}
+  .offer:hover{box-shadow:var(--shadowH)}
+  .offer .rail{width:5px;flex:0 0 5px}
+  .offer .in{flex:1;padding:20px 22px;min-width:0}
+  .orow{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+  .otitle{font-family:'Bricolage Grotesque';font-weight:700;font-size:17.5px;line-height:1.25}
+  .tags{display:inline-flex;gap:7px;margin-left:2px;vertical-align:middle}
+  .tag{font-size:12px;font-weight:600;color:var(--slate);background:var(--paper);border-radius:999px;padding:3px 10px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--slate);font-size:13.5px;margin-top:9px}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+
+  .aff{flex:0 0 auto;text-align:right;min-width:78px}
+  .aff .n{font-family:'Bricolage Grotesque';font-weight:800;font-size:22px;line-height:1}
+  .aff .t{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--slateL);font-weight:700;margin-top:2px}
+  .aff .track{height:5px;border-radius:999px;background:var(--paper);margin-top:8px;overflow:hidden}
+  .aff .fill{height:100%;border-radius:999px}
+
+  .actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 15px;border-radius:11px;transition:.15s}
+  .btn-primary{background:var(--emerald);color:#fff}
+  .btn-primary:hover{background:var(--emeraldD)}
+  .btn-ghost{background:var(--surface);border:1px solid var(--hair);color:var(--inkSoft)}
+  .btn-ghost:hover{border-color:#cfd6df;background:#FAFBFC}
+  .sentpill{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 15px;border-radius:11px;background:var(--emeraldSoft);color:var(--emeraldD)}
+
+  .prep{margin-top:18px;padding-top:18px;border-top:1px solid var(--hair);display:none;gap:18px;grid-template-columns:1fr 1.3fr}
+  .prep.show{display:grid}
+  @media (max-width:760px){ .prep.show{grid-template-columns:1fr} }
+  .prep h4{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+  .atout{font-size:14px;color:var(--inkSoft);display:flex;gap:9px;margin-bottom:8px;line-height:1.45}
+  .atout .ck{color:var(--emerald);flex:0 0 auto;margin-top:2px}
+  .msg-edit{width:100%;min-height:170px;font-family:Inter,sans-serif;font-size:13.5px;line-height:1.55;color:var(--inkSoft);
+            background:#FAFBFC;border:1px solid var(--hair);border-radius:11px;padding:13px;resize:vertical}
+  .msg-edit:focus{outline:none;border-color:var(--ink);background:#fff}
+  .msg-note{font-size:12px;color:var(--slateL);margin-top:7px}
+
+  .empty,.loading{background:var(--surface);border:1px dashed #d3dae2;border-radius:var(--radius);padding:40px 24px;text-align:center;color:var(--slate);font-size:14.5px}
+
+  .foot{max-width:1440px;margin:0 auto;padding:8px 28px 40px;text-align:center;color:var(--slateL);font-size:12.5px}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);opacity:0;pointer-events:none;
+         background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;box-shadow:0 12px 40px rgba(16,35,60,.28);
+         display:flex;align-items:center;gap:9px;transition:all .25s;z-index:40}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:980px){
+    .layout{grid-template-columns:1fr;padding:18px}
+    .sidebar{position:static}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .topbar-in{padding:12px 18px}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
+
+<header class="topbar">
+  <div class="topbar-in">
     <div class="brand">
       <div class="logo">T</div>
-      <div><div class="name">Tremplin</div><div class="sub">Vos candidatures, prêtes à partir.</div></div>
+      <div>
+        <div class="name">Tremplin</div>
+        <div class="sub">Vos candidatures administratives, repérées et prêtes à partir.</div>
+      </div>
     </div>
-    <span class="pill" id="modePill" style="background:var(--amberSoft);color:var(--amber)">…</span>
+    <span class="badge demo" id="modeBadge"><span class="dot"></span><span id="modeText">Chargement…</span></span>
   </div>
+</header>
 
-  <div class="profils" id="profils"></div>
+<main class="layout">
+  <aside class="sidebar">
+    <div class="card card-pad">
+      <div class="card-title">Métier ciblé</div>
+      <div class="plist" id="plist"></div>
+    </div>
+    <div class="card card-pad field">
+      <div class="card-title" style="margin-bottom:12px">Localisation</div>
+      <label for="dept">Département où vit la personne</label>
+      <input id="dept" type="text" inputmode="numeric" value="69" placeholder="ex : 26, 69, 75" />
+      <div class="hint">Saisissez un ou plusieurs départements, séparés par des virgules.</div>
+    </div>
+    <div class="card card-pad help">
+      <p class="lead">Comment ça marche</p>
+      <p>Tremplin scanne le marché de l'emploi et fait remonter les offres qui collent au profil. Pour chacune, une candidature est déjà rédigée — vous la relisez, l'ajustez, et vous l'envoyez en un clic.</p>
+    </div>
+  </aside>
 
-  <div class="deptrow">
-    <label for="dept">Département où vit la personne</label>
-    <input id="dept" type="text" inputmode="numeric" value="69" placeholder="ex : 26, 69, 75" />
-    <span class="depthint">Vous pouvez en saisir plusieurs, séparés par des virgules.</span>
-  </div>
+  <section class="content">
+    <div class="stats-head">
+      <span class="lab">Cette session</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="bar" style="background:var(--ink)"></div><div class="v tnum" id="sPrep">–</div><div class="l">Offres repérées</div></div>
+      <div class="stat"><div class="bar" style="background:var(--emerald)"></div><div class="v tnum" id="sEnv" style="color:var(--emerald)">0</div><div class="l">Candidatures envoyées</div></div>
+      <div class="stat"><div class="bar" style="background:var(--slateL)"></div><div class="v tnum" id="sRep">0</div><div class="l">Réponses</div></div>
+      <div class="stat"><div class="bar" style="background:var(--amber)"></div><div class="v tnum" id="sEnt" style="color:var(--amber)">0</div><div class="l">Entretiens</div></div>
+    </div>
 
-  <div class="lab" id="statLab">Cette semaine</div>
-  <div class="stats">
-    <div class="stat"><div class="v tnum" id="sPrep">–</div><div class="l">Préparées</div></div>
-    <div class="stat"><div class="v tnum" id="sEnv" style="color:var(--emerald)">–</div><div class="l">Envoyées</div></div>
-    <div class="stat"><div class="v tnum" id="sRep">–</div><div class="l">Réponses</div></div>
-    <div class="stat"><div class="v tnum" id="sEnt" style="color:var(--amber)">–</div><div class="l">Entretiens</div></div>
-  </div>
+    <div class="banner" id="banner">Chargement des offres…</div>
+    <div class="offers" id="offers"></div>
+  </section>
+</main>
 
-  <div class="banner" id="banner">Chargement des offres…</div>
-  <div id="offres"></div>
-
-  <div class="foot">Offres du marché de l'emploi → candidatures préparées, jamais envoyées sans votre validation.</div>
-</div>
+<div class="foot">Offres issues du marché de l'emploi (API France Travail) → candidatures préparées, jamais envoyées sans votre validation.</div>
 <div class="toast" id="toast"></div>
 
 <script>
 const $ = (s)=>document.querySelector(s);
-let profils=[], active=null, sent={};
-
-const matchColor=(m)=> m>=85?'var(--emerald)': m>=70?'var(--amber)':'var(--slate)';
 const esc=(s)=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const matchColor=(m)=> m>=85?'var(--emerald)': m>=70?'var(--amber)':'var(--slateL)';
+
+let profils=[], active=null;
+const sentGlobal = new Set();   // candidatures envoyées cette session (honnête)
+const edited = {};              // messages modifiés en direct, par offre
 
 async function init(){
-  profils = await (await fetch('/api/profils')).json();
-  const box=$('#profils');
+  try{ profils = await (await fetch('/api/profils')).json(); }
+  catch(e){ $('#banner').textContent = "Impossible de charger les profils."; return; }
+  const box=$('#plist');
   profils.forEach((p,i)=>{
     const el=document.createElement('button');
-    el.className='profil'+(i===0?' on':'');
-    el.innerHTML=`<div class="pn">${esc(p.label.split(' / ')[0])}</div><div class="pr">${esc(p.label)}</div>`;
-    el.onclick=()=>select(p.id,el);
+    el.className='pitem'+(i===0?' on':'');
+    const short = p.label.split(' / ')[0];
+    el.innerHTML='<span class="pn">'+esc(short)+'</span><span class="pr">'+esc(p.label)+'</span>';
+    el.onclick=()=>{ active=p.id; document.querySelectorAll('.pitem').forEach(e=>e.classList.remove('on')); el.classList.add('on'); load(); };
     box.appendChild(el);
     if(i===0) active=p.id;
   });
-  load(active);
+  load();
 }
 
-function select(id,el){
-  active=id;
-  document.querySelectorAll('.profil').forEach(e=>e.classList.remove('on'));
-  el.classList.add('on');
-  load(id);
+function refreshStats(count){
+  $('#sPrep').textContent = count;
+  $('#sEnv').textContent = sentGlobal.size;
 }
 
-async function load(profil){
-  $('#offres').innerHTML='';
+async function load(){
+  $('#offers').innerHTML='';
+  $('#banner').className='banner';
   $('#banner').textContent='Chargement des offres…';
-  let data;
   const dept = encodeURIComponent(($('#dept').value||'').trim());
-  const url = '/api/offres?profil='+profil + (dept?'&departement='+dept:'');
+  const url = '/api/offres?profil='+active + (dept?'&departement='+dept:'');
+  let data;
   try{ data = await (await fetch(url)).json(); }
-  catch(e){ $('#banner').textContent='Erreur de chargement.'; return; }
-  if(data.error){ $('#banner').textContent='Erreur : '+data.error; return; }
+  catch(e){ $('#banner').className='banner err'; $('#banner').textContent='Erreur de chargement.'; return; }
 
-  $('#modePill').textContent = data.mode==='reel' ? 'Données réelles' : 'Aperçu démo';
-  const seed = seeds[profil] || {env:0,rep:0,ent:0};
-  const sentCount = (sent[profil]||[]).length;
-  $('#sPrep').textContent = data.count;
-  $('#sEnv').textContent = seed.env + sentCount;
-  $('#sRep').textContent = seed.rep;
-  $('#sEnt').textContent = seed.ent;
-  $('#banner').innerHTML = `<b>${data.count} offres administratives</b> repérées pour ce profil. Chaque candidature est déjà rédigée — il ne reste qu'à valider.`;
+  if(data.error){
+    $('#banner').className='banner err';
+    $('#banner').textContent='Erreur : '+data.error;
+    $('#modeBadge').className='badge demo'; $('#modeText').textContent='Non connecté';
+    refreshStats(0);
+    return;
+  }
 
-  const wrap=$('#offres');
+  const real = data.mode==='reel';
+  $('#modeBadge').className = 'badge '+(real?'real':'demo');
+  $('#modeText').textContent = real?'Données réelles':'Aperçu démo';
+  refreshStats(data.count);
+
+  if(!data.offres || data.count===0){
+    $('#banner').textContent='Aucune offre trouvée pour ce profil et ce département. Essayez un autre département.';
+    $('#offers').innerHTML='<div class="empty">Aucune offre pour l\'instant. Modifiez le métier ou le département à gauche.</div>';
+    return;
+  }
+
+  $('#banner').innerHTML='<b>'+data.count+' offres administratives</b> repérées pour ce profil. Chaque candidature est déjà rédigée — il ne reste qu\'à valider.';
+
+  const wrap=$('#offers');
   data.offres.forEach(o=>{
-    const isSent=(sent[profil]||[]).includes(o.id);
+    const sent = sentGlobal.has(o.id);
+    const col = matchColor(o.match);
     const el=document.createElement('div');
-    el.className='offre';
-    el.innerHTML=`
-      <div class="tab" style="background:${isSent?'var(--emerald)':matchColor(o.match)}"></div>
-      <div class="body">
-        <div class="orow">
-          <div>
-            <span class="otitle">${esc(o.title)}</span><span class="badge">${esc(o.contract)}</span>
-            <div class="meta"><span>🏢 ${esc(o.employer)}</span><span>📍 ${esc(o.city)}</span>${o.ago?`<span>🕑 ${esc(o.ago)}</span>`:''}</div>
-          </div>
-          <div><div class="match" style="color:${matchColor(o.match)}">${o.match}%</div><div class="matchl">affinité</div></div>
-        </div>
-        <div class="actions">
-          ${isSent
-            ? `<span class="sent" style="padding:8px 12px;border-radius:9px">✓ Candidature envoyée</span>`
-            : `<button class="send">✈ Valider et envoyer</button>`}
-          <button class="ghost toggle">📄 Voir la candidature prête</button>
-        </div>
-        <div class="prep">
-          <div class="preplab" style="color:var(--amber)">✦ Atouts mis en avant</div>
-          ${o.candidature.atouts.map(a=>`<div class="atout">✓ ${esc(a)}</div>`).join('')}
-          <div class="preplab" style="color:var(--slate);margin-top:10px">✉ Message au recruteur</div>
-          <div class="msg">${esc(o.candidature.message)}</div>
-        </div>
-      </div>`;
+    el.className='offer';
+    el.innerHTML =
+      '<div class="rail" style="background:'+(sent?'var(--emerald)':col)+'"></div>'+
+      '<div class="in">'+
+        '<div class="orow">'+
+          '<div style="min-width:0">'+
+            '<div class="otitle">'+esc(o.title)+' <span class="tags"><span class="tag">'+esc(o.contract)+'</span></span></div>'+
+            '<div class="meta">'+
+              '<span>🏢 '+esc(o.employer)+'</span>'+
+              '<span>📍 '+esc(o.city)+'</span>'+
+              (o.ago?'<span>🕑 '+esc(o.ago)+'</span>':'')+
+            '</div>'+
+          '</div>'+
+          '<div class="aff">'+
+            '<div class="n" style="color:'+col+'">'+o.match+'%</div>'+
+            '<div class="t">affinité</div>'+
+            '<div class="track"><div class="fill" style="width:'+o.match+'%;background:'+col+'"></div></div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="actions">'+
+          (sent
+            ? '<span class="sentpill">✓ Candidature envoyée</span>'
+            : '<button class="btn btn-primary send">✈ Valider et envoyer</button>')+
+          '<button class="btn btn-ghost toggle">📄 Voir &amp; ajuster la candidature</button>'+
+        '</div>'+
+        '<div class="prep">'+
+          '<div>'+
+            '<h4 style="color:var(--amber)">✦ Atouts mis en avant</h4>'+
+            (o.candidature.atouts||[]).map(a=>'<div class="atout"><span class="ck">✓</span>'+esc(a)+'</div>').join('')+
+          '</div>'+
+          '<div>'+
+            '<h4 style="color:var(--slate)">✉ Message au recruteur — modifiable</h4>'+
+            '<textarea class="msg-edit">'+esc(edited[o.id] || o.candidature.message)+'</textarea>'+
+            '<div class="msg-note">Modifiez librement le texte : c\'est cette version qui sera utilisée à l\'envoi.</div>'+
+          '</div>'+
+        '</div>';
+
+    const ta = el.querySelector('.msg-edit');
+    ta.addEventListener('input', ()=>{ edited[o.id] = ta.value; });
     el.querySelector('.toggle').onclick=()=>el.querySelector('.prep').classList.toggle('show');
     const sb=el.querySelector('.send');
-    if(sb) sb.onclick=()=>doApply(o,profil);
+    if(sb) sb.onclick=()=>doApply(o, ta.value);
     wrap.appendChild(el);
   });
 }
 
-// Postulat "assisté" et conforme : on ouvre le canal officiel, l'humain confirme.
-function doApply(o,profil){
+function doApply(o, message){
   if(o.contactEmail){
     const subject=encodeURIComponent('Candidature — '+o.title);
-    const body=encodeURIComponent(o.candidature.message);
-    window.open(`mailto:${o.contactEmail}?subject=${subject}&body=${body}`,'_blank');
+    const body=encodeURIComponent(message || (o.candidature && o.candidature.message) || '');
+    window.open('mailto:'+o.contactEmail+'?subject='+subject+'&body='+body,'_blank');
   } else if(o.applyUrl){
     window.open(o.applyUrl,'_blank');
   }
-  (sent[profil]=sent[profil]||[]).push(o.id);
+  sentGlobal.add(o.id);
   toast('Candidature envoyée à '+o.employer);
-  load(profil);
+  load();
 }
 
-function toast(t){ const el=$('#toast'); el.textContent='✓ '+t; el.style.display='block';
-  setTimeout(()=>el.style.display='none',2500); }
+let toastTimer=null;
+function toast(t){
+  const el=$('#toast'); el.innerHTML='✓ '+esc(t); el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2600);
+}
 
-// Amorces de pipeline par profil (historique fictif pour un funnel vivant en démo).
-// En production, remplacer par les vrais compteurs stockés côté base.
-const seeds={ direction:{env:6,rep:3,ent:1}, juridique:{env:4,rep:2,ent:1},
-              adv:{env:5,rep:2,ent:0}, medical:{env:4,rep:3,ent:2} };
-
-document.getElementById('dept').addEventListener('change',()=>{ if(active) load(active); });
-
+$('#dept').addEventListener('input', ()=>{ if(active) load(); });
 init();
 </script>
 </body>
