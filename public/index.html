@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tremplin — vos candidatures, prêtes à partir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#17233B; --inkSoft:#2A3A5C; --paper:#EBEDF0; --surface:#fff;
+    --emerald:#12805C; --emeraldSoft:#E6F2EC; --amber:#C98A2B; --amberSoft:#F7EEDD;
+    --slate:#5B6472; --hair:#E1E4E8;
+  }
+  *{box-sizing:border-box;margin:0;-webkit-font-smoothing:antialiased}
+  body{background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.45}
+  .wrap{max-width:920px;margin:0 auto;padding:24px 16px}
+  .tnum{font-variant-numeric:tabular-nums}
+  h1,h2,h3,.display{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+  /* header */
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{background:var(--ink);border-radius:9px;width:36px;height:36px;display:grid;place-items:center;color:#fff;font-weight:800}
+  .brand .name{font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;line-height:1}
+  .brand .sub{font-size:12px;color:var(--slate)}
+  .pill{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
+  /* profils */
+  .profils{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px}
+  .profil{flex:0 0 auto;min-width:190px;text-align:left;background:var(--surface);border:1px solid var(--hair);
+          border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}
+  .profil .pn{font-weight:600;font-size:14px}
+  .profil .pr{font-size:12px;color:var(--slate)}
+  .profil.on{background:var(--ink);border-color:var(--ink)}
+  .profil.on .pn{color:#fff} .profil.on .pr{color:#C6CEDC}
+  /* pipeline */
+  .lab{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);font-weight:600;margin-bottom:8px}
+  .stats{display:flex;gap:8px}
+  .stat{flex:1;background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:12px}
+  .stat .v{font-family:'Bricolage Grotesque';font-weight:800;font-size:24px}
+  .stat .l{font-size:12px;color:var(--slate);margin-top:2px}
+  /* bandeau */
+  .banner{display:flex;align-items:center;gap:8px;background:var(--emeraldSoft);color:var(--emerald);
+          border-radius:10px;padding:9px 12px;font-size:14px;margin:16px 0}
+  /* offres */
+  .offre{background:var(--surface);border:1px solid var(--hair);border-radius:12px;display:flex;overflow:hidden;margin-bottom:12px}
+  .tab{width:6px;flex:0 0 6px}
+  .body{flex:1;padding:16px}
+  .orow{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .otitle{font-family:'Bricolage Grotesque';font-weight:700;font-size:16px}
+  .badge{font-size:12px;color:var(--slate);background:var(--paper);border-radius:999px;padding:2px 8px;margin-left:8px}
+  .meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--slate);font-size:13.5px;margin-top:6px}
+  .match{font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;text-align:right}
+  .matchl{font-size:10px;text-transform:uppercase;color:var(--slate);text-align:right}
+  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  button{font-family:Inter;font-size:14px;font-weight:600;border:none;border-radius:9px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .send{background:var(--emerald);color:#fff}
+  .ghost{background:var(--surface);border:1px solid var(--hair);color:var(--inkSoft);font-weight:500}
+  .sent{background:var(--emeraldSoft);color:var(--emerald)}
+  .prep{border-top:1px solid var(--hair);margin-top:14px;padding-top:14px;display:none}
+  .prep.show{display:block}
+  .preplab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:6px}
+  .atout{font-size:14px;color:var(--inkSoft);display:flex;gap:8px;margin-bottom:4px}
+  .msg{white-space:pre-wrap;background:var(--paper);border-radius:9px;padding:12px;font-size:14px;color:var(--inkSoft);margin-top:4px}
+  .deptrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+  .deptrow label{font-size:13px;font-weight:600;color:var(--inkSoft)}
+  .deptrow input{font-family:Inter;font-size:14px;padding:8px 10px;width:120px;border:1px solid var(--hair);border-radius:9px;background:var(--surface);color:var(--ink)}
+  .deptrow input:focus{outline:none;border-color:var(--ink)}
+  .depthint{font-size:12px;color:var(--slate)}
+  .foot{text-align:center;color:var(--slate);font-size:12px;margin-top:22px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;
+         padding:10px 16px;border-radius:11px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.18);display:none}
+  @media (max-width:560px){ .stats{flex-wrap:wrap} .stat{min-width:calc(50% - 4px)} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">T</div>
+      <div><div class="name">Tremplin</div><div class="sub">Vos candidatures, prêtes à partir.</div></div>
+    </div>
+    <span class="pill" id="modePill" style="background:var(--amberSoft);color:var(--amber)">…</span>
+  </div>
+
+  <div class="profils" id="profils"></div>
+
+  <div class="deptrow">
+    <label for="dept">Département où vit la personne</label>
+    <input id="dept" type="text" inputmode="numeric" value="69" placeholder="ex : 26, 69, 75" />
+    <span class="depthint">Vous pouvez en saisir plusieurs, séparés par des virgules.</span>
+  </div>
+
+  <div class="lab" id="statLab">Cette semaine</div>
+  <div class="stats">
+    <div class="stat"><div class="v tnum" id="sPrep">–</div><div class="l">Préparées</div></div>
+    <div class="stat"><div class="v tnum" id="sEnv" style="color:var(--emerald)">–</div><div class="l">Envoyées</div></div>
+    <div class="stat"><div class="v tnum" id="sRep">–</div><div class="l">Réponses</div></div>
+    <div class="stat"><div class="v tnum" id="sEnt" style="color:var(--amber)">–</div><div class="l">Entretiens</div></div>
+  </div>
+
+  <div class="banner" id="banner">Chargement des offres…</div>
+  <div id="offres"></div>
+
+  <div class="foot">Offres du marché de l'emploi → candidatures préparées, jamais envoyées sans votre validation.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s)=>document.querySelector(s);
+let profils=[], active=null, sent={};
+
+const matchColor=(m)=> m>=85?'var(--emerald)': m>=70?'var(--amber)':'var(--slate)';
+const esc=(s)=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function init(){
+  profils = await (await fetch('/api/profils')).json();
+  const box=$('#profils');
+  profils.forEach((p,i)=>{
+    const el=document.createElement('button');
+    el.className='profil'+(i===0?' on':'');
+    el.innerHTML=`<div class="pn">${esc(p.label.split(' / ')[0])}</div><div class="pr">${esc(p.label)}</div>`;
+    el.onclick=()=>select(p.id,el);
+    box.appendChild(el);
+    if(i===0) active=p.id;
+  });
+  load(active);
+}
+
+function select(id,el){
+  active=id;
+  document.querySelectorAll('.profil').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+  load(id);
+}
+
+async function load(profil){
+  $('#offres').innerHTML='';
+  $('#banner').textContent='Chargement des offres…';
+  let data;
+  const dept = encodeURIComponent(($('#dept').value||'').trim());
+  const url = '/api/offres?profil='+profil + (dept?'&departement='+dept:'');
+  try{ data = await (await fetch(url)).json(); }
+  catch(e){ $('#banner').textContent='Erreur de chargement.'; return; }
+  if(data.error){ $('#banner').textContent='Erreur : '+data.error; return; }
+
+  $('#modePill').textContent = data.mode==='reel' ? 'Données réelles' : 'Aperçu démo';
+  const seed = seeds[profil] || {env:0,rep:0,ent:0};
+  const sentCount = (sent[profil]||[]).length;
+  $('#sPrep').textContent = data.count;
+  $('#sEnv').textContent = seed.env + sentCount;
+  $('#sRep').textContent = seed.rep;
+  $('#sEnt').textContent = seed.ent;
+  $('#banner').innerHTML = `<b>${data.count} offres administratives</b> repérées pour ce profil. Chaque candidature est déjà rédigée — il ne reste qu'à valider.`;
+
+  const wrap=$('#offres');
+  data.offres.forEach(o=>{
+    const isSent=(sent[profil]||[]).includes(o.id);
+    const el=document.createElement('div');
+    el.className='offre';
+    el.innerHTML=`
+      <div class="tab" style="background:${isSent?'var(--emerald)':matchColor(o.match)}"></div>
+      <div class="body">
+        <div class="orow">
+          <div>
+            <span class="otitle">${esc(o.title)}</span><span class="badge">${esc(o.contract)}</span>
+            <div class="meta"><span>🏢 ${esc(o.employer)}</span><span>📍 ${esc(o.city)}</span>${o.ago?`<span>🕑 ${esc(o.ago)}</span>`:''}</div>
+          </div>
+          <div><div class="match" style="color:${matchColor(o.match)}">${o.match}%</div><div class="matchl">affinité</div></div>
+        </div>
+        <div class="actions">
+          ${isSent
+            ? `<span class="sent" style="padding:8px 12px;border-radius:9px">✓ Candidature envoyée</span>`
+            : `<button class="send">✈ Valider et envoyer</button>`}
+          <button class="ghost toggle">📄 Voir la candidature prête</button>
+        </div>
+        <div class="prep">
+          <div class="preplab" style="color:var(--amber)">✦ Atouts mis en avant</div>
+          ${o.candidature.atouts.map(a=>`<div class="atout">✓ ${esc(a)}</div>`).join('')}
+          <div class="preplab" style="color:var(--slate);margin-top:10px">✉ Message au recruteur</div>
+          <div class="msg">${esc(o.candidature.message)}</div>
+        </div>
+      </div>`;
+    el.querySelector('.toggle').onclick=()=>el.querySelector('.prep').classList.toggle('show');
+    const sb=el.querySelector('.send');
+    if(sb) sb.onclick=()=>doApply(o,profil);
+    wrap.appendChild(el);
+  });
+}
+
+// Postulat "assisté" et conforme : on ouvre le canal officiel, l'humain confirme.
+function doApply(o,profil){
+  if(o.contactEmail){
+    const subject=encodeURIComponent('Candidature — '+o.title);
+    const body=encodeURIComponent(o.candidature.message);
+    window.open(`mailto:${o.contactEmail}?subject=${subject}&body=${body}`,'_blank');
+  } else if(o.applyUrl){
+    window.open(o.applyUrl,'_blank');
+  }
+  (sent[profil]=sent[profil]||[]).push(o.id);
+  toast('Candidature envoyée à '+o.employer);
+  load(profil);
+}
+
+function toast(t){ const el=$('#toast'); el.textContent='✓ '+t; el.style.display='block';
+  setTimeout(()=>el.style.display='none',2500); }
+
+// Amorces de pipeline par profil (historique fictif pour un funnel vivant en démo).
+// En production, remplacer par les vrais compteurs stockés côté base.
+const seeds={ direction:{env:6,rep:3,ent:1}, juridique:{env:4,rep:2,ent:1},
+              adv:{env:5,rep:2,ent:0}, medical:{env:4,rep:3,ent:2} };
+
+document.getElementById('dept').addEventListener('change',()=>{ if(active) load(active); });
+
+init();
+</script>
+</body>
+</html>

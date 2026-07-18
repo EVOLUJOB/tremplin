@@ -1,0 +1,13 @@
+# Copiez ce fichier en .env puis remplissez vos identifiants France Travail.
+# Créez votre application sur https://francetravail.io (souscrivez à "Offres d'emploi v2").
+
+# Laissez MOCK_MODE=1 pour tester SANS clé (données simulées).
+# Passez à 0 (et remplissez les clés) pour interroger les vraies offres.
+MOCK_MODE=1
+
+FT_CLIENT_ID=
+FT_CLIENT_SECRET=
+# Le scope exact est affiché sur le tableau de bord de VOTRE application FT.
+FT_SCOPE=api_offresdemploiv2 o2dsoffre
+
+PORT=4059
