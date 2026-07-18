@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --ink:#16233C; --inkSoft:#2C3E60; --paper:#EEF1F5; --surface:#fff;
@@ -112,6 +113,9 @@
   .btn-ghost{background:var(--surface);border:1px solid var(--hair);color:var(--inkSoft)}
   .btn-ghost:hover{border-color:#cfd6df;background:#FAFBFC}
   .sentpill{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:10px 15px;border-radius:11px;background:var(--emeraldSoft);color:var(--emeraldD)}
+  .letter-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .btn-sm{font-size:12.5px;font-weight:600;padding:7px 11px;border-radius:9px;border:1px solid var(--hair);background:var(--surface);color:var(--inkSoft);cursor:pointer;transition:.15s}
+  .btn-sm:hover{border-color:#cfd6df;background:#FAFBFC}
   .prep{margin-top:18px;padding-top:18px;border-top:1px solid var(--hair);display:none;gap:18px;grid-template-columns:1fr 1.3fr}
   .prep.show{display:grid}
   @media (max-width:760px){ .prep.show{grid-template-columns:1fr} }
@@ -368,7 +372,7 @@ function render(){
           '<div class="aff"><div class="n" style="color:'+col+'">'+o.match+'%</div><div class="t">affinité</div><div class="track"><div class="fill" style="width:'+o.match+'%;background:'+col+'"></div></div></div>'+
         '</div>'+
         '<div class="actions">'+
-          (sent ? '<span class="sentpill">✓ Candidature envoyée</span>' : '<button class="btn btn-primary send">✈ Valider et envoyer</button>')+
+          (sent ? '<span class="sentpill">✓ Candidature traitée</span>' : '<button class="btn btn-primary send">✈ Ouvrir l\'offre &amp; postuler</button>')+
           '<button class="btn btn-ghost toggle">📄 Voir &amp; ajuster la candidature</button>'+
         '</div>'+
         '<div class="prep">'+
@@ -380,7 +384,11 @@ function render(){
             '<h4 style="color:var(--slate)">✉ Message au recruteur — modifiable</h4>'+
             '<div class="cv-flag'+(cvData?' on':'')+'">✓ Personnalisé avec le CV'+(cvData&&cvData.name?' de '+esc(cvData.name):'')+'</div>'+
             '<textarea class="msg-edit">'+esc(buildLetter(o))+'</textarea>'+
-            '<div class="msg-note">Modifiez librement : c\'est cette version qui sera utilisée à l\'envoi.</div>'+
+            '<div class="msg-note">Modifiez librement : c\'est cette version qui sera copiée / téléchargée.</div>'+
+            '<div class="letter-actions">'+
+              '<button class="btn-sm copybtn">📋 Copier la lettre</button>'+
+              '<button class="btn-sm pdfbtn">⬇ Télécharger la lettre (PDF)</button>'+
+            '</div>'+
           '</div>'+
         '</div>';
 
@@ -389,19 +397,58 @@ function render(){
     el.querySelector('.toggle').onclick=()=>el.querySelector('.prep').classList.toggle('show');
     const sb=el.querySelector('.send');
     if(sb) sb.onclick=()=>doApply(o, ta.value);
+    const cb=el.querySelector('.copybtn'); if(cb) cb.onclick=()=>copyLetter(ta.value);
+    const pb=el.querySelector('.pdfbtn'); if(pb) pb.onclick=()=>downloadLetterPdf(o, ta.value);
     wrap.appendChild(el);
   });
 }
 
 function doApply(o, message){
-  if(o.contactEmail){
-    window.open('mailto:'+o.contactEmail+'?subject='+encodeURIComponent('Candidature — '+o.title)+'&body='+encodeURIComponent(message||''),'_blank');
-  } else if(o.applyUrl){
+  if(o.applyUrl){
     window.open(o.applyUrl,'_blank');
+  } else if(o.contactEmail){
+    window.open('mailto:'+o.contactEmail+'?subject='+encodeURIComponent('Candidature — '+o.title)+'&body='+encodeURIComponent(message||''),'_blank');
+  } else {
+    toast('Copiez la lettre, puis postulez sur l\'offre');
   }
   sentGlobal.add(o.id);
-  toast('Candidature envoyée à '+o.employer);
   render();
+}
+
+function copyLetter(text){
+  const t=text||'';
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast('Lettre copiée ✓')).catch(()=>fallbackCopy(t));
+  } else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  const el=document.createElement('textarea'); el.value=t; el.style.position='fixed'; el.style.opacity='0';
+  document.body.appendChild(el); el.select();
+  try{ document.execCommand('copy'); toast('Lettre copiée ✓'); }catch(e){ toast('Copie impossible'); }
+  document.body.removeChild(el);
+}
+
+function downloadLetterPdf(o, text){
+  if(!(window.jspdf && window.jspdf.jsPDF)){ toast('Export PDF momentanément indisponible'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const margin=56; let y=margin;
+  const clean=(s)=>(s||'').replace(/[’‘]/g,"'").replace(/[“”]/g,'"');
+  if(cvData){
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    if(cvData.name){ doc.text(clean(cvData.name), margin, y); y+=16; }
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    if(cvData.email){ doc.text(clean(cvData.email), margin, y); y+=13; }
+    if(cvData.phone){ doc.text(clean(cvData.phone), margin, y); y+=13; }
+    y+=16;
+  }
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  const lines=doc.splitTextToSize(clean(text), W-margin*2);
+  lines.forEach(line=>{ if(y>H-margin){ doc.addPage(); y=margin; } doc.text(line, margin, y); y+=15; });
+  const fname='lettre_'+((o.title||'candidature').replace(/[^A-Za-z0-9]+/g,'_').slice(0,40))+'.pdf';
+  doc.save(fname);
+  toast('Lettre téléchargée ✓');
 }
 
 let toastTimer=null;
