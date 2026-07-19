@@ -19,6 +19,17 @@ const PROFILS = {
     ],
     pitch: "Organisé(e) et polyvalent(e), je fais gagner du temps à une direction au quotidien.",
   },
+  rh: {
+    label: "Assistant RH",
+    motsCles: "assistant RH",
+    codeROME: "",
+    atouts: [
+      "Administration du personnel : contrats, absences, dossiers",
+      "Appui au recrutement et à l'onboarding des nouveaux arrivants",
+      "Suivi des formations et des entretiens annuels",
+    ],
+    pitch: "Organisé(e) et discret(e), je fiabilise toute l'administration RH au quotidien.",
+  },
   juridique: {
     label: "Assistanat juridique",
     motsCles: "assistant juridique",
